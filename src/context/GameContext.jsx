@@ -22,18 +22,3 @@ export const GameProvider = ({ children }) => {
     </GameContext.Provider>
   )
 }
-
-
-/**
- * Component.jsx
- * description
- */
-
-import React, { useContext } from 'react'
-import { GameContext } from '..context/GameContext'
-
-export const Component = (props) => {
-  const { state, dispatch } = useContext(GameContext)
-
-  return (<p>{state}</p>)
-}

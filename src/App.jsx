@@ -1,10 +1,14 @@
+import { GameProvider } from './context/GameContext'
+import { Rules } from './component/Rules'
+import { Game } from './component/Game'
 
 function App() {
 
   return (
-    <>
-      <h1>App goes here</h1>
-    </>
+    <GameProvider>
+      <Rules />
+      <Game />
+    </GameProvider>
   )
 }
 

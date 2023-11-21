@@ -41,7 +41,7 @@ const reducer = ( state, action) => {
       return setPlayerToHuman(state, payload) // true or false
 
     case "TAKE_TOKEN":
-      return takeToken(state)
+      return takeToken(state, payload)
 
     default:
       return {...state}
@@ -102,9 +102,10 @@ function setPlayerToHuman( state, playerIsHuman ) {
  * @returns {object} updated clone of state. All values except
  * aiMove might change.
  */
-function takeToken( state ) {
-  const tokensLeft = state.tokensLeft = state.tokensLeft - 1
-  const canTake = state.canTake = state.canTake - 1
+function takeToken( state, { tokensLeft, canTake } ) {
+  tokensLeft -= 1
+  canTake -= 1
+  state = { ...state, tokensLeft, canTake }
 
   if (!canTake) {
     if (tokensLeft) {
@@ -117,12 +118,12 @@ function takeToken( state ) {
     }
   }
 
-  return { ...state }
+  return state
 }
 
 
-// Uncomment _just_ the module.exports line when testing...
-module.exports = { initialState, reducer }
+// // Uncomment _just_ the module.exports line when testing...
+// module.exports = { initialState, reducer }
 
 // ... or _just the export line when used in the project
-// export { initialState, reducer }
+export { initialState, reducer }

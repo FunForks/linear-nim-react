@@ -23,12 +23,11 @@ const { initialState, reducer } = require('./GameReducer.jsx')
 
 
 describe('GameReducer should', () => {
-  // Define standard actions
+  // Define standard action
   const SWITCH_TO_AI = {
     type: "SET_PLAYER_TO_HUMAN",
     payload: false
   }
-  const TAKE_TOKEN = { type: "TAKE_TOKEN" }
 
 
   // Test setting the player at the start
@@ -65,25 +64,34 @@ describe('GameReducer should', () => {
   // Play a game where the human will lose //
 
   test(`allow human to take a token`, () => {
+    const action = {
+      type: "TAKE_TOKEN",
+      payload: alteredState
+    }
     const expectedState = {
       ...initialState,
       tokensLeft: 11,
       canTake: 2
     }
 
-    alteredState = reducer( alteredState, TAKE_TOKEN )
+    alteredState = reducer( alteredState, action )
     expect(alteredState).toStrictEqual(expectedState)
   });
 
 
   test(`allow human to take a second token`, () => {
+    const action = {
+      type: "TAKE_TOKEN",
+      payload: alteredState
+    }
+
     const expectedState = {
       ...initialState,
       tokensLeft: 10,
       canTake: 1
     }
 
-    alteredState = reducer( alteredState, TAKE_TOKEN )
+    alteredState = reducer( alteredState, action )
     expect(alteredState).toStrictEqual(expectedState)
   });
 
@@ -103,6 +111,11 @@ describe('GameReducer should', () => {
 
 
   test(`take a token as AI`, () => {
+    const action = {
+      type: "TAKE_TOKEN",
+      payload: alteredState
+    }
+
     const expectedState = {
       ...alteredState,
       tokensLeft: 9,
@@ -110,12 +123,17 @@ describe('GameReducer should', () => {
       aiMove: 2,
     }
 
-    alteredState = reducer( alteredState, TAKE_TOKEN )
+    alteredState = reducer( alteredState, action )
     expect(alteredState).toStrictEqual(expectedState)
   });
 
 
   test(`switch back to human automatically when AI move is over`, () => {
+    const action = {
+      type: "TAKE_TOKEN",
+      payload: alteredState
+    }
+
     const expectedState = {
       ...alteredState,
       tokensLeft: 8,
@@ -124,15 +142,21 @@ describe('GameReducer should', () => {
       playerIsHuman: true
     }
 
-    alteredState = reducer( alteredState, TAKE_TOKEN )
+    alteredState = reducer( alteredState, action )
     expect(alteredState).toStrictEqual(expectedState)
   });
 
 
   test(`switch to AI automatically after human has moved 3 times`, () => {
-    alteredState = reducer( alteredState, TAKE_TOKEN )
-    alteredState = reducer( alteredState, TAKE_TOKEN )
-    alteredState = reducer( alteredState, TAKE_TOKEN )
+
+    for ( let ii = 0; ii < 3; ii += 1 ) {
+      const action = {
+        type: "TAKE_TOKEN",
+        payload: alteredState
+      }
+
+      alteredState = reducer( alteredState, action )
+    }
 
     const expectedState = {
       ...alteredState,
@@ -157,7 +181,12 @@ describe('GameReducer should', () => {
     let counter = 0
 
     while (!alteredState.playerIsHuman) {
-      alteredState = reducer( alteredState, TAKE_TOKEN )
+      const action = {
+        type: "TAKE_TOKEN",
+        payload: alteredState
+      }
+
+      alteredState = reducer( alteredState, action )
       counter += 1
     }
 
@@ -189,7 +218,12 @@ describe('GameReducer should', () => {
 
       // Human plays the given number of times...
       while (tokens--) {
-        alteredState = reducer( alteredState, TAKE_TOKEN )
+        const action = {
+          type: "TAKE_TOKEN",
+          payload: alteredState
+        }
+
+        alteredState = reducer( alteredState, action )
       }
 
       // ... then we make sure it's AI's turn
@@ -204,7 +238,11 @@ describe('GameReducer should', () => {
       while ( !alteredState.playerIsHuman
            && alteredState.winner === undefined
       ) {
-        alteredState = reducer( alteredState, TAKE_TOKEN )
+        const action = {
+          type: "TAKE_TOKEN",
+          payload: alteredState
+        }
+        alteredState = reducer( alteredState, action )
       }
 
       // console.log(`... you ${alteredState.winner ? "DO" : "can't"} win.`)
@@ -233,7 +271,11 @@ describe('GameReducer should', () => {
       while ( !alteredState.playerIsHuman
             && alteredState.winner === undefined
       ) {
-        alteredState = reducer( alteredState, TAKE_TOKEN )
+        const action = {
+          type: "TAKE_TOKEN",
+          payload: alteredState
+        }
+        alteredState = reducer( alteredState, action )
       }
       // console.log("AI completes move:", alteredState);
       // {
@@ -248,7 +290,11 @@ describe('GameReducer should', () => {
       while ( moves-- && alteredState.playerIsHuman
             && alteredState.winner === undefined
       ) {
-        alteredState = reducer( alteredState, TAKE_TOKEN )
+        const action = {
+          type: "TAKE_TOKEN",
+          payload: alteredState
+        }
+        alteredState = reducer( alteredState, action )
       }
       // console.log("human completes move:", alteredState);
       // {
@@ -276,18 +322,22 @@ describe('GameReducer should', () => {
   test(`do nothing if the game is over`, () => {
     // Truthy winner
     let state = { ...initialState, winner: "game over" }
+    const action = {
+      type: "TAKE_TOKEN",
+      payload: alteredState
+    }
 
-    expect(reducer( state, TAKE_TOKEN )).toBe(state)
+    expect(reducer( state, action )).toBe(state)
     expect(reducer( state, SWITCH_TO_AI )).toBe(state)
 
     // winner === true; state is arbitrary
     state = { winner: true, we: "are the champions" }
-    expect(reducer( state, TAKE_TOKEN )).toBe(state)
+    expect(reducer( state, action )).toBe(state)
     expect(reducer( state, SWITCH_TO_AI )).toBe(state)
 
     // winner === false; state is arbitrary
     state = { winner: false, whatever: "whatever" }
-    expect(reducer( state, TAKE_TOKEN )).toBe(state)
+    expect(reducer( state, action )).toBe(state)
     expect(reducer( state, SWITCH_TO_AI )).toBe(state)
   });
 
@@ -320,7 +370,11 @@ describe('GameReducer should', () => {
         // Play the human's moves
         moves.forEach( move => {
           while ( move-- && alteredState.playerIsHuman) {
-            alteredState = reducer( alteredState, TAKE_TOKEN )
+            const action = {
+              type: "TAKE_TOKEN",
+              payload: alteredState
+            }
+            alteredState = reducer( alteredState, action )
           }
         })
 
@@ -336,7 +390,11 @@ describe('GameReducer should', () => {
         while ( !alteredState.playerIsHuman
               && alteredState.winner === undefined
         ) {
-          alteredState = reducer( alteredState, TAKE_TOKEN )
+          const action = {
+            type: "TAKE_TOKEN",
+            payload: alteredState
+          }
+          alteredState = reducer( alteredState, action )
         }
       }
 

@@ -1,6 +1,6 @@
 /**
  * GameReducer.jsx
- * 
+ *
  * Use useReducer when:
  * + The next state depends on the previous state
  * + The state is complex
@@ -30,7 +30,12 @@ const initialState = {
 
 
 const reducer = ( state, action) => {
+  if (state.winner !== undefined) {
+    return state // Can't play after the game is over
+  }
+
   const { type, payload } = action
+
   switch (type) {
     case "SET_PLAYER_TO_HUMAN":
       return setPlayerToHuman(state, payload) // true or false
@@ -98,18 +103,14 @@ function setPlayerToHuman( state, playerIsHuman ) {
  * aiMove might change.
  */
 function takeToken( state ) {
-  if (state.winner !== undefined) {
-    return state // Can't play after the game is over
-  }
-
   const tokensLeft = state.tokensLeft = state.tokensLeft - 1
   const canTake = state.canTake = state.canTake - 1
 
   if (!canTake) {
     if (tokensLeft) {
       // Pass the turn to the other player
-      const playerIsHuman = !playerIsHuman
-      return setPlayer( state, playerIsHuman )
+      const playerIsHuman = !state.playerIsHuman
+      return setPlayerToHuman( state, playerIsHuman )
 
     } else {
       state.winner = state.playerIsHuman

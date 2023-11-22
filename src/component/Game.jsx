@@ -13,13 +13,14 @@ export const Game = (props) => {
     tokensLeft,
     canTake,
     playerIsHuman,
+    feedback,
     winner
   } = state
-  
+
 
 
   const takeToken = () => {
-    const action = { 
+    const action = {
       type: "TAKE_TOKEN",
       payload: { tokensLeft, canTake }
     }
@@ -39,13 +40,17 @@ export const Game = (props) => {
   }
 
 
+  const playAgain = () => {
+    dispatch({ type: "NEW_GAME" })
+  }
+
+
   useEffect(playAIMove)
 
 
   const cantSwitch = tokensLeft < 12
                   && ( !playerIsHuman
                      || canTake === 3
-                     || canTake === tokensLeft
                      )
 
   return (
@@ -60,24 +65,25 @@ export const Game = (props) => {
       >
         Take a token
       </button>
-      <button 
+      <button
         onClick={switchToAI}
         disabled={cantSwitch}
       >
         Let the AI play
       </button>
-      
-      <p
-        id="status"
-      ></p>
 
-      {winner !== undefined &&
-        <button
-          id="play-again"
-        >
-          Play Again
-        </button>
-     }
+      <p
+        id="feedback"
+      >{feedback}</p>
+
+
+      <button
+        className={winner === undefined ? "hidden" : ""}
+        onClick={playAgain}
+      >
+        Play Again
+      </button>
+
     </>
   )
 }

@@ -29,7 +29,6 @@ describe('GameReducer should', () => {
     payload: false
   }
 
-
   // Test setting the player at the start
   test(`treat initial player as human`, () => {
     expect(initialState.playerIsHuman).toBe(true)
@@ -37,12 +36,13 @@ describe('GameReducer should', () => {
 
   let alteredState // updates as the game is played
 
-  test(`set player to  AI and adjust canTake and aiMove`, () => {
+  test(`set player to  AI and adjust canTake and topMove`, () => {
     const expectedState = {
       ...initialState,
       playerIsHuman: false,
       canTake: 1,
-      aiMove: 1
+      topMove: 1,
+      feedback: " You let the AI play first."
     }
 
     alteredState = reducer( initialState, SWITCH_TO_AI )
@@ -56,8 +56,14 @@ describe('GameReducer should', () => {
       payload: true
     }
 
+    const expectedState = {
+      ...initialState,
+      topMove: 3,
+      feedback: " It's your turn now. You can take up to 3 tokens."
+    }
+
     alteredState = reducer( alteredState, switchToHuman )
-    expect(alteredState).toStrictEqual(initialState)
+    expect(alteredState).toStrictEqual(expectedState)
   });
 
 
@@ -71,7 +77,9 @@ describe('GameReducer should', () => {
     const expectedState = {
       ...initialState,
       tokensLeft: 11,
-      canTake: 2
+      canTake: 2,
+      topMove: 3,
+      feedback: "You can take up to 2 more tokens or let the AI play."
     }
 
     alteredState = reducer( alteredState, action )
@@ -88,7 +96,9 @@ describe('GameReducer should', () => {
     const expectedState = {
       ...initialState,
       tokensLeft: 10,
-      canTake: 1
+      canTake: 1,
+      topMove: 3,
+      feedback: "You can take 1 more token or let the AI play."
     }
 
     alteredState = reducer( alteredState, action )
@@ -96,13 +106,14 @@ describe('GameReducer should', () => {
   });
 
 
-  test(`switch to AI and calculate best aiMove when asked`, () => {
+  test(`switch to AI and calculate best topMove when asked`, () => {
     const expectedState = {
       ...alteredState,
       tokensLeft: 10,
       canTake: 2,
-      aiMove: 2,
-      playerIsHuman: false
+      topMove: 2,
+      playerIsHuman: false,
+      feedback: " Now it's the AI's turn to play."
     }
 
     alteredState = reducer( alteredState, SWITCH_TO_AI )
@@ -120,7 +131,8 @@ describe('GameReducer should', () => {
       ...alteredState,
       tokensLeft: 9,
       canTake: 1,
-      aiMove: 2,
+      topMove: 2,
+      feedback: "The AI took a first token."
     }
 
     alteredState = reducer( alteredState, action )
@@ -138,8 +150,9 @@ describe('GameReducer should', () => {
       ...alteredState,
       tokensLeft: 8,
       canTake: 3,
-      aiMove: 0,
-      playerIsHuman: true
+      topMove: 3,
+      playerIsHuman: true,
+     feedback:  "The AI took a second token. It's your turn now. You can take up to 3 tokens."
     }
 
     alteredState = reducer( alteredState, action )
@@ -162,7 +175,7 @@ describe('GameReducer should', () => {
       ...alteredState,
       tokensLeft: 5,
       canTake: 1,
-      aiMove: 1,
+      topMove: 1,
       playerIsHuman: false
     }
 
@@ -204,16 +217,17 @@ describe('GameReducer should', () => {
     const winningState = {
       tokensLeft: 0,
       canTake: 0,
-      aiMove: 0, // will depend on number of tokens taken by human
+      topMove: 0, // will depend on number of tokens taken by human
       playerIsHuman: false,
+      feedback: "The AI took the last token. The AI wins.",
       winner: false
     }
 
     tokensToTake.forEach( tokens => {
       alteredState = { ...finalHumanStartingState }
 
-      // Final aiMove depends on the value of tokens
-      winningState.aiMove = 4 - tokens
+      // Final topMove depends on the value of tokens
+      winningState.topMove = 4 - tokens
       // console.log(`When there are ${alteredState.tokensLeft} tokens left, if you take ${tokens} token${tokens-1 ? "s" : ""}...`)
 
       // Human plays the given number of times...
@@ -261,7 +275,7 @@ describe('GameReducer should', () => {
     // {
     //   tokensLeft: 12,
     //   canTake: 1,
-    //   aiMove: 1,
+    //   topMove: 1,
     //   playerIsHuman: false,
     //   winner: undefined
     // }
@@ -281,7 +295,7 @@ describe('GameReducer should', () => {
       // {
       //   tokensLeft: 11,
       //   canTake: 3,
-      //   aiMove: 0,
+      //   topMove: 0,
       //   playerIsHuman: true,
       //   winner: undefined
       // }
@@ -300,7 +314,7 @@ describe('GameReducer should', () => {
       // {
       //   tokensLeft: 8,
       //   canTake: 1,
-      //   aiMove: 1,
+      //   topMove: 1,
       //   playerIsHuman: false,
       //   winner: undefined
       // }
@@ -310,7 +324,7 @@ describe('GameReducer should', () => {
     // {
     //   tokensLeft: 0,
     //   canTake: 0,
-    //   aiMove: 0,
+    //   topMove: 0,
     //   playerIsHuman: true,
     //   winner: true
     // }

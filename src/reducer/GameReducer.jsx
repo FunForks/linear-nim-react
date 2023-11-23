@@ -269,5 +269,5 @@ function replace(string, options) {
 // // Uncomment _just_ the module.exports line when testing...
 // module.exports = { initialState, reducer }
 
-// ... or _just the export line when used in the project
+// // ... or _just the export line when used in the project
 export { initialState, reducer }
